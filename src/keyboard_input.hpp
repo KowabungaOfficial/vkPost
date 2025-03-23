@@ -18,4 +18,8 @@ namespace vkPost
     bool     isKeyPressedWayland(uint32_t ks);
     void     init_wayland_data();
 #endif
+
+    void setInputMethodBasedOnConfig(const Config& config);
+    void initializeKeyboardInput();
+}
 } // namespace vkPost
