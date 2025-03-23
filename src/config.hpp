@@ -19,7 +19,7 @@ namespace vkPost
         Config(const Config& other);
 
         template<typename T>
-        T getOption(const std::string& option, const T& defaultValue = {}) const;
+        T getOption(const std::string& option, const T& defaultValue = {}) const
         {
             T result = defaultValue;
             parseOption(option, result);
