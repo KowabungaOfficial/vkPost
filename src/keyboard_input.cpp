@@ -2,6 +2,14 @@
 #include "logger.hpp"
 #include "config.hpp"
 
+#if VKPOST_WAYLAND
+#include <wayland-client.h>
+#endif
+
+#if VKPOST_X11
+#include <X11/Xlib.h>
+#endif
+
 #ifndef VKPOST_X11
 #define VKPOST_X11 1
 #endif
