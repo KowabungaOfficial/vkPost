@@ -16,7 +16,7 @@ depends=('glibc' 'gcc-libs' 'libx11' 'wayland' 'libxkbcommon')
 makedepends=('glslang' 'meson' 'ninja' 'spirv-headers' 'vulkan-headers')
 optdepends=('reshade-shaders-git: collection of shaders to use with vkPost')
 source=("${url}/releases/download/v${pkgver}/vkPost-${pkgver}.tar.gz")
-b2sums=('7dc3ba501a9d56ec56778b35a502e9f36760c2f0f49e6ff1f0b7821093e49762ae50957b7a678b05da3db385976bab73935d43726e6e802960e00e6be6ead126')
+b2sums=('7b937f30725085a3f403dcc62922657d357ff22f4be2cc4b4bd78f7841f60c85e7c7c7c4ed404408d6dc73a910be6c4edfe50d3ac8f167d11b4053766ac37542')
 install=vkpost.install
 
 prepare() {
