@@ -31,7 +31,7 @@
 
 namespace vkPost
 {
-    static InputMethod currentInputMethod = InputMethod::None;
+    static InputMethod currentInputMethod = InputMethod::NoInput;
 
     // Check if Wayland is available
     static bool isWaylandAvailable()
@@ -76,27 +76,27 @@ namespace vkPost
             } else if (isX11Available()) {
                 currentInputMethod = InputMethod::X11;
             } else {
-                currentInputMethod = InputMethod::None;
+                currentInputMethod = InputMethod::NoInput;
                 Logger::warn("No keyboard input method available, disabling input");
             }
         } else if (mode == "x11") {
             if (isX11Available()) {
                 currentInputMethod = InputMethod::X11;
             } else {
-                currentInputMethod = InputMethod::None;
+                currentInputMethod = InputMethod::NoInput;
                 Logger::warn("X11 is not available, disabling keyboard input");
             }
         } else if (mode == "wayland") {
             if (isWaylandAvailable()) {
                 currentInputMethod = InputMethod::Wayland;
             } else {
-                currentInputMethod = InputMethod::None;
+                currentInputMethod = InputMethod::NoInput;
                 Logger::warn("Wayland is not available, disabling keyboard input");
             }
         } else if (mode == "none") {
-            currentInputMethod = InputMethod::None;
+            currentInputMethod = InputMethod::NoInput;
         } else {
-            currentInputMethod = InputMethod::None;
+            currentInputMethod = InputMethod::NoInput;
             Logger::err("Invalid keyboardInputMode: " + mode + ", disabling keyboard input");
         }
     }
