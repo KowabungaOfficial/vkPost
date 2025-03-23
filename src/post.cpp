@@ -540,21 +540,28 @@ namespace vkPost
         return *pCount < pLogicalSwapchain->imageCount ? VK_INCOMPLETE : VK_SUCCESS;
     }
 
-    VKAPI_ATTR VkResult VKAPI_CALL vkPost_QueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo)
+VKAPI_ATTR VkResult VKAPI_CALL vkPost_QueuePresentKHR(VkQueue queue, const VkPresentInfoKHR* pPresentInfo)
     {
         scoped_lock l(globalLock);
 
-        static uint32_t keySymbol = convertToKeySym(pConfig->getOption<std::string>("toggleKey", "Home"));
+        static uint32_t keySymbol = 0;
+        static bool presentEffect = false;
+        static bool pressed = false;
+        static std::once_flag initFlag;
 
-        static bool pressed       = false;
-        static bool presentEffect = pConfig->getOption<bool>("enableOnLaunch", true);
+        std::call_once(initFlag, [&]() {
+            setInputMethodBasedOnConfig(*pConfig);
+            initializeKeyboardInput();
+            keySymbol = convertToKeySym(pConfig->getOption<std::string>("toggleKey", "Home"));
+            presentEffect = pConfig->getOption<bool>("enableOnLaunch", true);
+        });
 
         if (isKeyPressed(keySymbol))
         {
             if (!pressed)
             {
                 presentEffect = !presentEffect;
-                pressed       = true;
+                pressed = true;
             }
         }
         else
