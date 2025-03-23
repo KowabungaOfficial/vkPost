@@ -38,6 +38,11 @@ vkPost_src = [
     'vkdispatch.cpp',
 ]
 
+# Conditionally add Wayland source if VKPOST_WAYLAND is defined
+if get_option('cpp_args').contains('-DVKPOST_WAYLAND=1')
+    vkPost_src += 'keyboard_input_wayland.cpp'
+endif
+
 x11_dep = dependency('x11')
 
 conf_paths = configuration_data()
@@ -48,14 +53,20 @@ configure_file(output: 'config_paths.hpp',
                configuration : conf_paths)
 
 # X11/X.h library contains many definitions (e.g. None)
-# which conflicts with the rest codebase with with Meson --unity=on option
+# which conflicts with the rest codebase with Meson --unity=on option
 keyboard_input_x11_lib = static_library('keyboard_input_x11', 'keyboard_input_x11.cpp')
+
+# Dependencies for the shared library
+dependencies = [x11_dep, reshade_dep]
+if get_option('cpp_args').contains('-DVKPOST_WAYLAND=1')
+    dependencies += [dependency('wayland-client'), dependency('xkbcommon')]
+endif
 
 shared_library(meson.project_name().to_lower(), 
     vkPost_src, shader_include,
     link_with: [keyboard_input_x11_lib],
     include_directories : vkPost_include_path,
-    dependencies : [x11_dep, reshade_dep],
+    dependencies : dependencies,
     gnu_symbol_visibility: 'hidden',
     install : true,
     install_dir : lib_dir)
