@@ -10,6 +10,7 @@
 #include <cstring>
 
 #include "util.hpp"
+#include "config.hpp"
 #include "keyboard_input.hpp"
 
 #include "logical_device.hpp"
@@ -23,7 +24,6 @@
 #include "graphics_pipeline.hpp"
 #include "command_buffer.hpp"
 #include "buffer.hpp"
-#include "config.hpp"
 #include "fake_swapchain.hpp"
 #include "renderpass.hpp"
 #include "format.hpp"
