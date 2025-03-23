@@ -9,7 +9,7 @@ namespace vkPost
     enum class InputMethod {
         X11,
         Wayland,
-        None
+        NoInput
     };
 
     uint32_t convertToKeySym(std::string key);
