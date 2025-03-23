@@ -1,3 +1,11 @@
+#ifndef VKPOST_X11
+#define VKPOST_X11 1
+#endif
+
+#ifndef VKPOST_WAYLAND
+#define VKPOST_WAYLAND 1
+#endif
+
 #include "keyboard_input.hpp"
 #include "logger.hpp"
 #include "config.hpp"
@@ -8,14 +16,6 @@
 
 #if VKPOST_X11
 #include <X11/Xlib.h>
-#endif
-
-#ifndef VKPOST_X11
-#define VKPOST_X11 1
-#endif
-
-#ifndef VKPOST_WAYLAND
-#define VKPOST_WAYLAND 1
 #endif
 
 #if VKPOST_X11
