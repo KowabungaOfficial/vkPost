@@ -18,6 +18,9 @@
 #include "keyboard_input_wayland.hpp"
 #endif
 
+#include <cstdlib> // for getenv
+#include <cstring> // for strcmp
+
 namespace vkPost
 {
     static InputMethod currentInputMethod = InputMethod::None;
@@ -26,8 +29,8 @@ namespace vkPost
     static bool isWaylandAvailable()
     {
 #if VKPOST_WAYLAND
-        const char* sessionType = getenv("XDG_SESSION_TYPE");
-        if (sessionType && strcmp(sessionType, "wayland") == 0) {
+        const char* sessionType = std::getenv("XDG_SESSION_TYPE");
+        if (sessionType && std::strcmp(sessionType, "wayland") == 0) {
             struct wl_display* display = wl_display_connect(nullptr);
             if (display) {
                 wl_display_disconnect(display);
@@ -43,8 +46,8 @@ namespace vkPost
     // Check if X11 is available
     static bool isX11Available()
     {
-        const char* displayVar = getenv("DISPLAY");
-        if (displayVar && strcmp(displayVar, "") != 0) {
+        const char* displayVar = std::getenv("DISPLAY");
+        if (displayVar && std::strcmp(displayVar, "") != 0) {
             Display* display = XOpenDisplay(displayVar);
             if (display) {
                 XCloseDisplay(display);
