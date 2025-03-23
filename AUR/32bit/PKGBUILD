@@ -12,7 +12,7 @@ pkgdesc='A Vulkan Post Processing Layer For Linux (32-bit). Next Gen vkBasalt.'
 arch=('x86_64')
 url='https://github.com/KowabungaOfficial/vkPost'
 license=('Zlib')
-depends=('lib32-glibc' 'lib32-gcc-libs' 'lib32-libx11')
+depends=('lib32-glibc' 'lib32-gcc-libs' 'lib32-libx11' 'lib32-wayland' 'lib32-libxkbcommon')
 makedepends=('glslang' 'meson' 'ninja' 'spirv-headers' 'vulkan-headers')
 optdepends=('reshade-shaders-git: collection of shaders to use with vkPost'
             'vkpost: sample config at /usr/share/vkPost/vkPost.conf.example')
