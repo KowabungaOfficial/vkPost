@@ -5,6 +5,12 @@
 
 namespace vkPost
 {
+    enum class InputMethod {
+        X11,
+        Wayland,
+        None
+    };
+
     uint32_t convertToKeySym(std::string key);
     bool     isKeyPressed(uint32_t ks);
 #if VKPOST_WAYLAND
