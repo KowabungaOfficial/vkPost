@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include "config.hpp"
 
 namespace vkPost
 {
@@ -21,5 +22,4 @@ namespace vkPost
 
     void setInputMethodBasedOnConfig(const Config& config);
     void initializeKeyboardInput();
-}
 } // namespace vkPost
