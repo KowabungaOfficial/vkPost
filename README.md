@@ -183,7 +183,7 @@ I will look into it. In the meantime if anyone wants to add it I will happily in
 #### Will you support the Steam Deck
 Yes, I am working on a way to get it to work on steam deck. Check for updates in releases.
 #### Will you add  Wayland support?
-Yes I am working on a way. In the meantime if anyone wants to add it, they are free to contribute.
+If anyone would like to add it, they are free to contribute.
 #### Will there be a GUI in the future?
 Not for this project, but if anyone wants to make one they are free to.
 #### Can you make reshade shaders work?
