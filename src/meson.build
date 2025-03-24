@@ -1,6 +1,9 @@
 subdir('shader')
 subdir('reshade')
 
+cpp = meson.get_compiler('cpp')
+vkpost_wayland = cpp.get_define('VKPOST_WAYLAND')
+
 vkPost_src = [
     'buffer.cpp',
     'command_buffer.cpp',
@@ -39,7 +42,7 @@ vkPost_src = [
 ]
 
 # Conditionally add Wayland source if VKPOST_WAYLAND is defined
-if get_option('cpp_args').contains('-DVKPOST_WAYLAND=1')
+if vkpost_wayland == '1'
     vkPost_src += 'keyboard_input_wayland.cpp'
 endif
 
@@ -58,8 +61,10 @@ keyboard_input_x11_lib = static_library('keyboard_input_x11', 'keyboard_input_x1
 
 # Dependencies for the shared library
 dependencies = [x11_dep, reshade_dep]
-if get_option('cpp_args').contains('-DVKPOST_WAYLAND=1')
-    dependencies += [dependency('wayland-client'), dependency('xkbcommon')]
+if vkpost_wayland == '1'
+    wayland_client_dep = dependency('wayland-client')
+    xkbcommon_dep = dependency('xkbcommon')
+    dependencies += [wayland_client_dep, xkbcommon_dep]
 endif
 
 shared_library(meson.project_name().to_lower(), 
