@@ -11,7 +11,6 @@
 
 #include "util.hpp"
 #include "keyboard_input.hpp"
-#include "display_server.hpp"  // Added for DisplayServer enum
 
 #include "logical_device.hpp"
 #include "logical_swapchain.hpp"
@@ -60,11 +59,6 @@ namespace vkPost
     std::unordered_map<void*, uint32_t>                                   instanceVersionMap;
     std::unordered_map<void*, std::shared_ptr<LogicalDevice>>             deviceMap;
     std::unordered_map<VkSwapchainKHR, std::shared_ptr<LogicalSwapchain>> swapchainMap;
-
-    // Added for Wayland support
-    wl_display* g_wl_display = nullptr;  // Global Wayland display pointer
-    std::unordered_map<VkSurfaceKHR, DisplayServer> surfaceTypeMap;  // Map to track surface display server type
-    DisplayServer current_ds = DisplayServer::UNKNOWN;  // Current display server in use
 
     std::mutex globalLock;
 #ifdef _GCC_
@@ -192,7 +186,7 @@ namespace vkPost
 
         PFN_vkCreateDevice createFunc = (PFN_vkCreateDevice) gipa(VK_NULL_HANDLE, "vkCreateDevice");
 
-        // check and activate extensions
+        // check and activate extentions
         uint32_t extensionCount = 0;
 
         instanceDispatchMap[GetKey(physicalDevice)].EnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
@@ -234,7 +228,7 @@ namespace vkPost
         modifiedCreateInfo.ppEnabledExtensionNames = enabledExtensionNames.data();
         modifiedCreateInfo.enabledExtensionCount   = enabledExtensionNames.size();
 
-        // Activate needed Features
+        // Active needed Features
         VkPhysicalDeviceFeatures deviceFeatures = {};
         if (modifiedCreateInfo.pEnabledFeatures)
         {
@@ -319,40 +313,6 @@ namespace vkPost
         deviceMap.erase(GetKey(device));
     }
 
-    // Added for Wayland support: Intercept Wayland surface creation
-    VkResult VKAPI_CALL vkPost_CreateWaylandSurfaceKHR(VkInstance instance, const VkWaylandSurfaceCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface) {
-        scoped_lock l(globalLock);
-        Logger::trace("vkCreateWaylandSurfaceKHR");
-        InstanceDispatch& dispatch = instanceDispatchMap[GetKey(instance)];
-        VkResult result = dispatch.CreateWaylandSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
-        if (result == VK_SUCCESS) {
-            surfaceTypeMap[*pSurface] = DisplayServer::WAYLAND;
-            g_wl_display = pCreateInfo->display;
-        }
-        return result;
-    }
-
-    // Added for Wayland support: Intercept X11 surface creation
-    VkResult VKAPI_CALL vkPost_CreateXlibSurfaceKHR(VkInstance instance, const VkXlibSurfaceCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface) {
-        scoped_lock l(globalLock);
-        Logger::trace("vkCreateXlibSurfaceKHR");
-        InstanceDispatch& dispatch = instanceDispatchMap[GetKey(instance)];
-        VkResult result = dispatch.CreateXlibSurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
-        if (result == VK_SUCCESS) {
-            surfaceTypeMap[*pSurface] = DisplayServer::X11;
-        }
-        return result;
-    }
-
-    // Added for Wayland support: Clean up surface type map
-    void VKAPI_CALL vkPost_DestroySurfaceKHR(VkInstance instance, VkSurfaceKHR surface, const VkAllocationCallbacks* pAllocator) {
-        scoped_lock l(globalLock);
-        Logger::trace("vkDestroySurfaceKHR");
-        surfaceTypeMap.erase(surface);
-        InstanceDispatch& dispatch = instanceDispatchMap[GetKey(instance)];
-        dispatch.DestroySurfaceKHR(instance, surface, pAllocator);
-    }
-
     VKAPI_ATTR VkResult VKAPI_CALL vkPost_CreateSwapchainKHR(VkDevice                        device,
                                                                const VkSwapchainCreateInfoKHR* pCreateInfo,
                                                                const VkAllocationCallbacks*    pAllocator,
@@ -378,8 +338,10 @@ namespace vkPost
         if (pLogicalDevice->supportsMutableFormat)
         {
             modifiedCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-                                            | VK_IMAGE_USAGE_SAMPLED_BIT;
+                                            | VK_IMAGE_USAGE_SAMPLED_BIT; // we want to use the swapchain images as output of the graphics pipeline
             modifiedCreateInfo.flags |= VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR;
+            // TODO what if the application already uses multiple formats for the swapchain?
+
             imageFormatListCreateInfo.sType           = VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR;
             imageFormatListCreateInfo.pNext           = modifiedCreateInfo.pNext;
             imageFormatListCreateInfo.viewFormatCount = (srgbFormat == unormFormat) ? 1 : 2;
@@ -397,11 +359,6 @@ namespace vkPost
         pLogicalSwapchain->imageExtent         = modifiedCreateInfo.imageExtent;
         pLogicalSwapchain->format              = modifiedCreateInfo.imageFormat;
         pLogicalSwapchain->imageCount          = 0;
-        // Added for Wayland support: Set display server for this swapchain
-        pLogicalSwapchain->display_server      = surfaceTypeMap[pCreateInfo->surface];
-        if (current_ds == DisplayServer::UNKNOWN) {
-            current_ds = pLogicalSwapchain->display_server;
-        }
 
         VkResult result = pLogicalDevice->vkd.CreateSwapchainKHR(device, &modifiedCreateInfo, pAllocator, pSwapchain);
 
@@ -587,18 +544,12 @@ namespace vkPost
     {
         scoped_lock l(globalLock);
 
-        // Added for Wayland support: Dispatch Wayland events to update key states
-        if (current_ds == DisplayServer::WAYLAND && g_wl_display) {
-            wl_display_dispatch_pending(g_wl_display);
-        }
-
-        // Modified for Wayland support: Pass current_ds to key functions
-        static uint32_t keySymbol = convertToKeySym(current_ds, pConfig->getOption<std::string>("toggleKey", "Home"));
+        static uint32_t keySymbol = convertToKeySym(pConfig->getOption<std::string>("toggleKey", "Home"));
 
         static bool pressed       = false;
         static bool presentEffect = pConfig->getOption<bool>("enableOnLaunch", true);
 
-        if (isKeyPressed(current_ds, keySymbol))
+        if (isKeyPressed(keySymbol))
         {
             if (!pressed)
             {
@@ -787,7 +738,7 @@ namespace vkPost
                     {
                         if (pLogicalSwapchain->commandBuffersEffect.size())
                         {
-                            pLogicalDevice->vkd.DestroyCommandPool(pLogicalDevice->device,
+                            pLogicalDevice->vkd.FreeCommandBuffers(pLogicalDevice->device,
                                                                    pLogicalDevice->commandPool,
                                                                    pLogicalSwapchain->commandBuffersEffect.size(),
                                                                    pLogicalSwapchain->commandBuffersEffect.data());
@@ -890,18 +841,22 @@ extern "C"
 #define GETPROCADDR(func) \
     if (!std::strcmp(pName, "vk" #func)) \
         return (PFN_vkVoidFunction) &vkPost::vkPost_##func;
+    /*
+    Return our funktions for the funktions we want to intercept
+    the macro takes the name and returns our vkPost_##func, if the name is equal
+    */
 
-    // Modified for Wayland support: Added surface-related intercepts
+    // vkGetDeviceProcAddr needs to behave like vkGetInstanceProcAddr thanks to some games
 #define INTERCEPT_CALLS \
+    /* instance chain functions we intercept */ \
     if (!std::strcmp(pName, "vkGetInstanceProcAddr")) \
         return (PFN_vkVoidFunction) &vkPost_GetInstanceProcAddr; \
     GETPROCADDR(EnumerateInstanceLayerProperties); \
     GETPROCADDR(EnumerateInstanceExtensionProperties); \
     GETPROCADDR(CreateInstance); \
     GETPROCADDR(DestroyInstance); \
-    GETPROCADDR(CreateWaylandSurfaceKHR); \
-    GETPROCADDR(CreateXlibSurfaceKHR); \
-    GETPROCADDR(DestroySurfaceKHR); \
+\
+    /* device chain functions we intercept*/ \
     if (!std::strcmp(pName, "vkGetDeviceProcAddr")) \
         return (PFN_vkVoidFunction) &vkPost_GetDeviceProcAddr; \
     GETPROCADDR(EnumerateDeviceLayerProperties); \
@@ -912,6 +867,7 @@ extern "C"
     GETPROCADDR(GetSwapchainImagesKHR); \
     GETPROCADDR(QueuePresentKHR); \
     GETPROCADDR(DestroySwapchainKHR); \
+\
     if (vkPost::pConfig->getOption<std::string>("depthCapture", "off") == "on") \
     { \
         GETPROCADDR(CreateImage); \
