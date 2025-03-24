@@ -132,7 +132,8 @@ namespace vkPost
         }
     }
 
-    void Config::parseOption(const std::string& option, int32_t& result) const {
+    void Config::parseOption(const std::string& option, int32_t& result)
+    {
         auto found = options.find(option);
         if (found != options.end())
         {
@@ -147,7 +148,8 @@ namespace vkPost
         }
     }
 
-    void Config::parseOption(const std::string& option, float& result) const {
+    void Config::parseOption(const std::string& option, float& result)
+    {
         auto found = options.find(option);
         if (found != options.end())
         {
@@ -172,7 +174,8 @@ namespace vkPost
         }
     }
 
-    void Config::parseOption(const std::string& option, bool& result) const {
+    void Config::parseOption(const std::string& option, bool& result)
+    {
         auto found = options.find(option);
         if (found != options.end())
         {
@@ -191,7 +194,8 @@ namespace vkPost
         }
     }
 
-    void Config::parseOption(const std::string& option, std::string& result) const {
+    void Config::parseOption(const std::string& option, std::string& result)
+    {
         auto found = options.find(option);
         if (found != options.end())
         {
@@ -199,7 +203,8 @@ namespace vkPost
         }
     }
 
-    void Config::parseOption(const std::string& option, std::vector<std::string>& result) const {
+    void Config::parseOption(const std::string& option, std::vector<std::string>& result)
+    {
         auto found = options.find(option);
         if (found != options.end())
         {
