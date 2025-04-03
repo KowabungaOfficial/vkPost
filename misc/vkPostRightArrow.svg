@@ -4,10 +4,13 @@
 <desc>Created with Fabric.js 5.2.4</desc>
 <defs>
 </defs>
-<g transform="matrix(1 0 0 1 540 540)" id="b8d3f4f1-aadc-45e3-998d-15d7bdcdc03e"  >
+<g transform="matrix(1 0 0 1 540 540)" id="36f1bd76-ddb9-4e5d-9ddf-bd582f77d656"  >
+</g>
+<g transform="matrix(1 0 0 1 540 540)" id="f39d6756-a905-4b3e-b905-806d188f506a"  >
 <rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-540" y="-540" rx="0" ry="0" width="1080" height="1080" />
 </g>
-<g transform="matrix(1 0 0 1 540 540)" id="78b07de8-635c-45f4-8c40-b64d2fb4a99e"  >
+<g transform="matrix(1 0 0 1 540 540)"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-540" y="-540" rx="0" ry="0" width="1080" height="1080" />
 </g>
 <g transform="matrix(1 0 0 1 540 540)"  >
 <rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-540" y="-540" rx="0" ry="0" width="1080" height="1080" />
@@ -18,7 +21,7 @@
 <g transform="matrix(1 0 0 1 540 540)"  >
 <rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-540" y="-540" rx="0" ry="0" width="1080" height="1080" />
 </g>
-<g transform="matrix(72.42 0 0 72.42 535 535)"  >
-<path style="stroke: rgb(255,255,255); stroke-width: 5; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(164,30,34); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-12, -12.01)" d="M 6 11.9999 L 6 9.32992 C 6 6.01992 8.35 4.65992 11.22 6.31992 L 13.53 7.65992 L 15.84 8.99992 C 18.71 10.6599 18.71 13.3699 15.84 15.0299 L 13.53 16.3699 L 11.22 17.7099 C 8.35 19.3399 6 17.9899 6 14.6699 L 6 11.9999 Z" stroke-linecap="round" />
+<g transform="matrix(72.42 0 0 72.42 533.73 533.73)"  >
+<path style="stroke: rgb(255,255,255); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(164,30,34); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-12, -12.01)" d="M 6 11.9999 L 6 9.32992 C 6 6.01992 8.35 4.65992 11.22 6.31992 L 13.53 7.65992 L 15.84 8.99992 C 18.71 10.6599 18.71 13.3699 15.84 15.0299 L 13.53 16.3699 L 11.22 17.7099 C 8.35 19.3399 6 17.9899 6 14.6699 L 6 11.9999 Z" stroke-linecap="round" />
 </g>
 </svg>
