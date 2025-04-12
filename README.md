@@ -6,7 +6,7 @@ Currently, the built in effects are:
 - Denoised Luma Sharpening
 - Fast Approximate Anti-Aliasing
 - Enhanced Subpixel Morphological Anti-Aliasing
-- 3D color LookUp Table
+- 3D Color LookUp Table
 
 ---------------------------------------------------------
 
