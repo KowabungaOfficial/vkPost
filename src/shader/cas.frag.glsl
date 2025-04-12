@@ -16,66 +16,47 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 #version 450
 
-layout(set=0, binding=0) uniform sampler2D img;
+layout(location = 0) in vec2 v_texcoord;
+layout(location = 0) out vec4 outColor;
 
-layout (constant_id = 0) const float sharpness = 0.4;
+layout(set = 0, binding = 0) uniform sampler2D inputImage;
+layout(set = 0, binding = 1) uniform SMAAParams {
+    float smaaThreshold;    // Edge detection sensitivity (e.g., 0.1)
+    int smaaMaxSearchSteps; // Max steps for edge search (e.g., 16)
+};
 
-layout(location = 0) in vec2 textureCoord;
-layout(location = 0) out vec4 fragColor;
+float Luma(vec3 color) {
+    return dot(color, vec3(0.299, 0.587, 0.114));
+}
 
-#define textureLod0Offset(img, coord, offset) textureLodOffset(img, coord, 0.0f, offset)
-#define textureLod0(img, coord) textureLod(img, coord, 0.0f)
+void main() {
+    vec2 resolution = vec2(textureSize(inputImage, 0));
+    vec2 pixelSize = 1.0 / resolution;
+    vec3 center = texture(inputImage, v_texcoord).rgb;
 
-void main()
-{
-    // fetch a 3x3 neighborhood around the pixel 'e',
-    //  a b c
-    //  d(e)f
-    //  g h i
-    vec4 inputColor = textureLod0(img,textureCoord);
-    float alpha = inputColor.a;
+    // Sample neighbors for edge detection
+    vec3 left = texture(inputImage, v_texcoord + vec2(-pixelSize.x, 0.0)).rgb;
+    vec3 right = texture(inputImage, v_texcoord + vec2(pixelSize.x, 0.0)).rgb;
+    vec3 up = texture(inputImage, v_texcoord + vec2(0.0, -pixelSize.y)).rgb;
+    vec3 down = texture(inputImage, v_texcoord + vec2(0.0, pixelSize.y)).rgb;
 
-    vec3 a = textureLod0Offset(img, textureCoord, ivec2(-1,-1)).rgb;
-    vec3 b = textureLod0Offset(img, textureCoord, ivec2( 0,-1)).rgb;
-    vec3 c = textureLod0Offset(img, textureCoord, ivec2( 1,-1)).rgb;
-    vec3 d = textureLod0Offset(img, textureCoord, ivec2(-1, 0)).rgb;
-    vec3 e = inputColor.rgb;
-    vec3 f = textureLod0Offset(img, textureCoord, ivec2( 1, 0)).rgb;
-    vec3 g = textureLod0Offset(img, textureCoord, ivec2(-1, 1)).rgb;
-    vec3 h = textureLod0Offset(img, textureCoord, ivec2( 0, 1)).rgb;
-    vec3 i = textureLod0Offset(img, textureCoord, ivec2( 1, 1)).rgb;
+    // Compute luminance for edge detection
+    float lumaCenter = Luma(center);
+    float lumaLeft = Luma(left);
+    float lumaRight = Luma(right);
+    float lumaUp = Luma(up);
+    float lumaDown = Luma(down);
 
-    // Soft min and max.
-    //  a b c             b
-    //  d e f * 0.5  +  d e f * 0.5
-    //  g h i             h
-    // These are 2.0x bigger (factored out the extra multiply).
+    // Detect edges
+    vec2 edges = vec2(0.0);
+    edges.x = max(abs(lumaLeft - lumaCenter), abs(lumaRight - lumaCenter)) > smaaThreshold ? 1.0 : 0.0;
+    edges.y = max(abs(lumaUp - lumaCenter), abs(lumaDown - lumaCenter)) > smaaThreshold ? 1.0 : 0.0;
 
-    vec3 mnRGB  = min(min(min(d,e),min(f,b)),h);
-    vec3 mnRGB2 = min(min(min(mnRGB,a),min(g,c)),i);
-    mnRGB += mnRGB2;
-
-    vec3 mxRGB  = max(max(max(d,e),max(f,b)),h);
-    vec3 mxRGB2 = max(max(max(mxRGB,a),max(g,c)),i);
-    mxRGB += mxRGB2;
-
-    // Smooth minimum distance to signal limit divided by smooth max.
-
-    vec3 rcpMxRGB = vec3(1)/mxRGB;
-    vec3 ampRGB = clamp((min(mnRGB,2.0-mxRGB) * rcpMxRGB),0,1);
-
-    // Shaping amount of sharpening.
-    ampRGB = inversesqrt(ampRGB);
-    float peak = 8.0 - 3.0 * sharpness;
-    vec3 wRGB = -vec3(1)/(ampRGB * peak);
-    vec3 rcpWeightRGB = vec3(1)/(1.0 + 4.0 * wRGB);
-
-    //                          0 w 0
-    //  Filter shape:           w 1 w
-    //                          0 w 0  
-
-    vec3 window = (b + d) + (f + h);
-    vec3 outColor = clamp((window * wRGB + e) * rcpWeightRGB,0,1);
-
-    fragColor = vec4(outColor,alpha);
+    if (dot(edges, vec2(1.0)) == 0.0) {
+        outColor = vec4(center, 1.0); // No edge, keep original
+    } else {
+        // Simplified blending
+        vec3 blend = (left + right + up + down) * 0.25;
+        outColor = vec4(mix(center, blend, 0.5), 1.0);
+    }
 }
