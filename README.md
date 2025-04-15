@@ -36,7 +36,7 @@ wget https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/lib32-
 sudo pacman -U lib32-vkpost-0.4.6-2-x86_64.pkg.tar.zst
 ```
 
-### Other Linux Distros Coming Soon (I need others who can publish to different distros):
+### Other Linux Distros Coming Soon (Need others who can publish to different distros):
 
 ---------------------------------------------------------
 
@@ -102,7 +102,7 @@ The config file will be searched for in the following locations:
 
 If you want to make changes for one game only, you can create a file named `vkPost.conf` in the working directory of the game and change the values there.
 
-#### Reshade Fx shaders
+#### Reshade Fx Shaders
 
 To run reshade fx shaders e.g. shaders from the [reshade repo](https://github.com/crosire/reshade-shaders), you have to set `reshadeTexturePath` and `reshadeIncludePath` to the matching dirctories from the repo. To then use a specific shader you need to set a custom effect name to the shader path and then add that effect name to `effects` like every other effect.
 
@@ -115,7 +115,7 @@ reshadeTexturePath = /home/user/reshade-shaders/Textures
 reshadeIncludePath = /home/user/reshade-shaders/Shaders
 ```
 
-#### Ingame Input
+#### In-Game Input
 
 The [HOME](https://en.wikipedia.org/wiki/Home_key) key can be used to disable and re-enable the applied effects, the key can also be changed in the config file. This is based on X11 so it won't work on pure wayland. It **should** however at least not crash without X11.
 
