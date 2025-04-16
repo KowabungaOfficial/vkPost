@@ -6,7 +6,7 @@
 # Contributor: rodrigo21
 
 pkgname='lib32-vkpost'
-pkgver=0.5.1
+pkgver=0.4.6
 pkgrel=2
 pkgdesc='A Vulkan Post Processing Layer For Linux (32-bit). Next Gen vkBasalt.'
 arch=('x86_64')
