@@ -93,14 +93,12 @@ Here is an example, along with how to seperate effects by adding `;`
 Settings like the CAS sharpening strength can be changed in the config file.
 The config file will be searched for in the following locations:
 * a file set with the environment variable`VKPOST_CONFIG_FILE=/path/to/vkPost.conf`
-* `vkPost.conf` in the working directory of the game
+* `vkPost.conf` in the working directory of the game  (Useful For Per Game Configs)
 * `$XDG_CONFIG_HOME/vkPost/vkPost.conf` or `~/.config/vkPost/vkPost.conf` if `XDG_CONFIG_HOME` is not set
 * `$XDG_DATA_HOME/vkPost/vkPost.conf` or `~/.local/share/vkPost/vkPost.conf` if `XDG_DATA_HOME` is not set
 * `/etc/vkPost.conf`
 * `/etc/vkPost/vkPost.conf`
 * `/usr/share/vkPost/vkPost.conf`
-
-If you want to make changes for one game only, you can create a file named `vkPost.conf` in the working directory of the game and change the values there.
 
 #### Reshade Fx Shaders
 
