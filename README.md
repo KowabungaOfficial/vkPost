@@ -115,7 +115,7 @@ reshadeIncludePath = /home/user/reshade-shaders/Shaders
 
 #### In-Game Input
 
-The [HOME](https://en.wikipedia.org/wiki/Home_key) key can be used to disable and re-enable the applied effects, the key can also be changed in the config file. This is based on X11 so it won't work on pure wayland. It **should** however at least not crash without X11.
+The [HOME](https://en.wikipedia.org/wiki/Home_key) key can be used to toggle effects on/off, the key can also be changed in the config file. This is based on X11 so it won't work on pure wayland, yet.
 
 ---------------------------------------------------------
 ## <img style="width: 18px; height: 18px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/vkPostRightArrow.svg"> Building From Source And Debugging
