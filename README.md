@@ -19,19 +19,35 @@ vkPost is a continuation of where vkBasalt left off.
 
 ## <img style="width: 18px; height: 18px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/vkPostRightArrow.svg"> How To Install
 
-### <img style="width: 30px; height: 30px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/ArchLinuxLogo.svg"> Arch/Arch Based Distros (Temporary Until I Can Figure Out AUR):
+### <img style="width: 30px; height: 30px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/ArchLinuxLogo.svg"> Arch/Arch Based Distros:
 *Recommended To Install Both 64bit and 32bit Versions*
-> [!IMPORTANT]
-> Download [vkPost.conf](https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkPost.conf) and place it in any of these [locations](https://github.com/KowabungaOfficial/vkPost/tree/main#-configure) 
 
+> [!IMPORTANT]
+> Download [vkPost.conf](https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkPost.conf) and place it in any of these [locations](https://github.com/KowabungaOfficial/vkPost/tree/main#-configure).
+
+#### AUR
 64bit Version:
+```sh
+yay -S vkpost
 ```
+
+32bit Version:
+```
+yay -S lib32-vkpost
+```
+
+Don't forget to copy the [default config](https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkPost.conf) to [here](https://github.com/KowabungaOfficial/vkPost/tree/main#-configure).
+
+
+#### Pacman from binary
+64bit Version:
+```sh
 wget https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkpost-0.4.6-2-x86_64.pkg.tar.zst
 sudo pacman -U vkpost-0.4.6-2-x86_64.pkg.tar.zst
 ```
 
 32bit Version:
-```
+```sh
 wget https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/lib32-vkpost-0.4.6-2-x86_64.pkg.tar.zst
 sudo pacman -U lib32-vkpost-0.4.6-2-x86_64.pkg.tar.zst
 ```
