@@ -20,7 +20,7 @@ vkPost is a continuation of where vkBasalt left off.
 ## <img style="width: 18px; height: 18px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/vkPostRightArrow.svg"> How To Install
 
 ### <img style="width: 30px; height: 30px;" src="https://github.com/KowabungaOfficial/vkPost/blob/main/misc/ArchLinuxLogo.svg"> Arch/Arch Based Distros:
-*Recommended To Install Both 64bit and 32bit Versions*
+*It is recommended to install both the 32-bit and 64-bit versions*
 
 > [!IMPORTANT]
 > Download [vkPost.conf](https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkPost.conf) and place it in any of these [locations](https://github.com/KowabungaOfficial/vkPost/tree/main#-configure).
