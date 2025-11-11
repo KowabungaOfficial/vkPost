@@ -26,6 +26,8 @@ vkPost is a continuation of where vkBasalt left off.
 > Download [vkPost.conf](https://github.com/KowabungaOfficial/vkPost/releases/download/v0.4.6/vkPost.conf) and place it in any of these [locations](https://github.com/KowabungaOfficial/vkPost/tree/main#-configure).
 
 #### AUR
+Both the [64-bit](https://aur.archlinux.org/packages/vkpost) and [32-bit](https://aur.archlinux.org/packages/lib32-vkpost) versions can be installed via the [AUR](https://aur.archlinux.org/packages/vkpost)
+
 64bit Version:
 ```sh
 yay -S vkpost
