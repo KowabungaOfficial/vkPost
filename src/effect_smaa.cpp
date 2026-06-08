@@ -57,6 +57,8 @@ namespace vkPost
         Logger::debug("created output ImageViews");
         sampler = createSampler(pLogicalDevice);
         Logger::debug("created sampler");
+        depthSampler = createDepthSampler(pLogicalDevice);
+        Logger::debug("created depth sampler");
 
         VkExtent3D areaImageExtent = {AREATEX_WIDTH, AREATEX_HEIGHT, 1};
 
@@ -87,12 +89,12 @@ namespace vkPost
         searchImageView = createImageViews(pLogicalDevice, VK_FORMAT_R8_UNORM, std::vector<VkImage>(1, searchImage))[0];
         Logger::debug("created search ImageView");
 
-        imageSamplerDescriptorSetLayout = createImageSamplerDescriptorSetLayout(pLogicalDevice, 5);
+        imageSamplerDescriptorSetLayout = createImageSamplerDescriptorSetLayout(pLogicalDevice, 6);
         Logger::debug("created descriptorSetLayouts");
 
         VkDescriptorPoolSize imagePoolSize;
         imagePoolSize.type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        imagePoolSize.descriptorCount = inputImages.size() * 5;
+        imagePoolSize.descriptorCount = inputImages.size() * 6;
 
         std::vector<VkDescriptorPoolSize> poolSizes = {imagePoolSize};
 
@@ -107,23 +109,54 @@ namespace vkPost
             float   reverseScreenWidth;
             float   reverseScreenHeight;
             float   threshold;
+            float   depthThreshold;
             int32_t maxSearchSteps;
             int32_t maxSearchStepsDiag;
             int32_t cornerRounding;
+            // Depth settings
+            int32_t depthInputIsUpsideDown;
+            int32_t depthInputIsReverse;
+            int32_t depthInputIsLogarithmic;
+            float   depthMultiplier;
+            float   depthLinearizationFarPlane;
         };
 
         SmaaOptions smaaOptions;
         smaaOptions.threshold          = pConfig->getOption<float>("smaaThreshold", 0.05f);
+        smaaOptions.depthThreshold     = pConfig->getOption<float>("smaaDepthThreshold", 0.01f);
         smaaOptions.maxSearchSteps     = pConfig->getOption<int32_t>("smaaMaxSearchSteps", 32);
         smaaOptions.maxSearchStepsDiag = pConfig->getOption<int32_t>("smaaMaxSearchStepsDiag", 16);
         smaaOptions.cornerRounding     = pConfig->getOption<int32_t>("smaaCornerRounding", 25);
+        int detectionType              = pConfig->getOption<int32_t>("smaaEdgeDetection", 0);
+
+        smaaOptions.depthInputIsUpsideDown      = pConfig->getOption<int32_t>("depthInputIsUpsideDown", 0);
+        smaaOptions.depthInputIsReverse         = pConfig->getOption<int32_t>("depthInputIsReverse", 0);
+        smaaOptions.depthInputIsLogarithmic     = pConfig->getOption<int32_t>("depthInputIsLogarithmic", 0);
+        smaaOptions.depthMultiplier             = pConfig->getOption<float>("depthMultiplier", 1.0f);
+        smaaOptions.depthLinearizationFarPlane  = pConfig->getOption<float>("depthLinearizationFarPlane", 1000.f);
+
+        auto smaa_edge_frag = smaa_edge_luma_frag;
+
+        switch (detectionType)
+        {
+            case 1:
+                smaa_edge_frag = smaa_edge_color_frag;
+                Logger::debug("Using color detection in SMAA");
+                break;
+
+            case 2:
+                smaa_edge_frag = smaa_edge_depth_frag;
+                Logger::debug("Using depth detection in SMAA");
+                break;
+
+            default:
+                Logger::debug("Using luma detection in SMAA");
+                break;
+        }
 
         createShaderModule(pLogicalDevice, smaa_edge_vert, &edgeVertexModule);
 
-        bool useColor = pConfig->getOption<std::string>("smaaEdgeDetection", "luma") == "color";
-
-        auto shaderCode = useColor ? smaa_edge_color_frag : smaa_edge_luma_frag;
-        createShaderModule(pLogicalDevice, shaderCode, &edgeFragmentModule);
+        createShaderModule(pLogicalDevice, smaa_edge_frag, &edgeFragmentModule);
 
         createShaderModule(pLogicalDevice, smaa_blend_vert, &blendVertexModule);
 
@@ -139,7 +172,7 @@ namespace vkPost
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts = {imageSamplerDescriptorSetLayout};
         pipelineLayout                                          = createGraphicsPipelineLayout(pLogicalDevice, descriptorSetLayouts);
 
-        std::vector<VkSpecializationMapEntry> specMapEntrys(8);
+        std::vector<VkSpecializationMapEntry> specMapEntrys(14);
         for (uint32_t i = 0; i < specMapEntrys.size(); i++)
         {
             specMapEntrys[i].constantID = i;
@@ -329,6 +362,30 @@ namespace vkPost
                                                &secondBarrier);
         Logger::debug("after the second pipeline barrier");
     }
+
+    void SmaaEffect::useDepthImage(VkImageView depthImageView)
+    {
+        Logger::debug("Using depth image in SMAA");
+
+        for (uint32_t i = 0; i < imageDescriptorSets.size(); ++i) {
+            VkDescriptorImageInfo depthInfo{};
+            depthInfo.sampler = depthSampler;
+            depthInfo.imageView = depthImageView;
+            depthInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+            VkWriteDescriptorSet write{};
+            write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            write.dstSet = imageDescriptorSets[i];
+            write.dstBinding = 5;
+            write.dstArrayElement = 0;
+            write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            write.descriptorCount = 1;
+            write.pImageInfo = &depthInfo;
+
+            pLogicalDevice->vkd.UpdateDescriptorSets(pLogicalDevice->device, 1, &write, 0, nullptr);
+        }
+    }
+
     SmaaEffect::~SmaaEffect()
     {
         Logger::debug("destroying smaa effect " + convertToString(this));

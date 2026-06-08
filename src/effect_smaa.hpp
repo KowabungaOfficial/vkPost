@@ -27,6 +27,7 @@ namespace vkPost
                    std::vector<VkImage> outputImages,
                    Config*              pConfig);
         void applyEffect(uint32_t imageIndex, VkCommandBuffer commandBuffer) override;
+        void useDepthImage(VkImageView depthImageView) override;
         ~SmaaEffect();
 
     private:
@@ -67,6 +68,7 @@ namespace vkPost
         VkDeviceMemory               areaMemory;
         VkDeviceMemory               searchMemory;
         VkSampler                    sampler;
+        VkSampler                    depthSampler;
 
         Config* pConfig;
     };

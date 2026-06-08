@@ -9,6 +9,7 @@ shader_src = [
     'smaa_blend.vert.glsl',
     'smaa_edge_color.frag.glsl',
     'smaa_edge_luma.frag.glsl',
+    'smaa_edge_depth.frag.glsl',
     'smaa_edge.vert.glsl',
     'smaa_neighbor.frag.glsl',
     'smaa_neighbor.vert.glsl',
