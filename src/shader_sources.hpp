@@ -45,6 +45,10 @@ namespace vkPost
 #include "smaa_edge_luma.frag.h"
     };
 
+    const std::vector<uint32_t> smaa_edge_depth_frag = {
+#include "smaa_edge_depth.frag.h"
+    };
+
     const std::vector<uint32_t> smaa_edge_vert = {
 #include "smaa_edge.vert.h"
     };

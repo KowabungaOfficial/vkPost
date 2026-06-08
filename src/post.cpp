@@ -61,6 +61,8 @@ namespace vkPost
     std::unordered_map<VkSwapchainKHR, std::shared_ptr<LogicalSwapchain>> swapchainMap;
 
     std::mutex globalLock;
+
+    VkExtent2D currentSwapchainExtent;
 #ifdef _GCC_
     using scoped_lock __attribute__((unused)) = std::lock_guard<std::mutex>;
 #else
@@ -364,6 +366,8 @@ namespace vkPost
 
         swapchainMap[*pSwapchain] = pLogicalSwapchain;
 
+        currentSwapchainExtent = pCreateInfo->imageExtent;
+
         return result;
     }
 
@@ -644,8 +648,11 @@ namespace vkPost
             VkImageCreateInfo modifiedCreateInfo = *pCreateInfo;
             modifiedCreateInfo.usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
             VkResult result = pLogicalDevice->vkd.CreateImage(device, &modifiedCreateInfo, pAllocator, pImage);
+            if (pCreateInfo->extent.width == currentSwapchainExtent.width) {
+            Logger::debug("depth image matches swapchain width of " + std::to_string(pCreateInfo->extent.width) + ", adding to depth image list");
             pLogicalDevice->depthImages.push_back(*pImage);
             pLogicalDevice->depthFormats.push_back(pCreateInfo->format);
+            }
 
             return result;
         }

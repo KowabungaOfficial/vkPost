@@ -16,6 +16,8 @@ namespace vkPost
 {
     VkSampler createSampler(LogicalDevice* pLogicalDevice);
 
+    VkSampler createDepthSampler(LogicalDevice* pLogicalDevice);
+
     VkSampler createReshadeSampler(LogicalDevice* pLogicalDevice, const reshadefx::sampler_info& samplerInfo);
 
     VkSamplerAddressMode convertReshadeAddressMode(const reshadefx::texture_address_mode& addressMode);
